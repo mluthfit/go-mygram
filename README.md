@@ -1,7 +1,6 @@
-# MyGram
+# About
 
 MyGram is photo storage application and every registered user can comment on other users' photos
-
 
 ## Getting Started
 
