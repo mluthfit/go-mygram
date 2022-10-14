@@ -20,7 +20,7 @@ Then, open the folder and **install** all packages.
 > go mod tidy
 ```
 
-Then, adjust the database configuration in `utils/db.go` file.
+Then, adjust the database configuration in `databases/db.go` file.
 
 Last, start the server.
 
