@@ -2,8 +2,8 @@ package databases
 
 import (
 	"fmt"
+	"go-mygram/helpers"
 	"go-mygram/models"
-	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -12,11 +12,11 @@ import (
 func NewDatabase() *gorm.DB {
 	var dsn = fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DB_USERNAME"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
+		helpers.GetEnv("DB_USERNAME"),
+		helpers.GetEnv("DB_PASSWORD"),
+		helpers.GetEnv("DB_HOST"),
+		helpers.GetEnv("DB_PORT"),
+		helpers.GetEnv("DB_NAME"),
 	)
 
 	var db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})

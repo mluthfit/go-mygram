@@ -1,17 +1,15 @@
 package helpers
 
 import (
-	"errors"
-	"os"
 	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPass(pass string) string {
-	var saltInt, err = strconv.Atoi(os.Getenv("SALT_PASSWORD"))
+	var saltInt, err = strconv.Atoi(GetEnv("SALT_PASSWORD"))
 	if err != nil {
-		panic(errors.New("SALT_PASSWORD env must be integer"))
+		panic("SALT_PASSWORD env must be integer")
 	}
 
 	var password = []byte(pass)

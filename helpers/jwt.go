@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"errors"
-	"os"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -16,7 +15,7 @@ func GenerateToken(id uint, email string) string {
 	}
 
 	var parseToken = jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	var signedToken, _ = parseToken.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	var signedToken, _ = parseToken.SignedString([]byte(GetEnv("SECRET_KEY")))
 
 	return signedToken
 }
@@ -36,7 +35,7 @@ func VerifyToken(ctx *gin.Context) (any, error) {
 			return nil, err
 		}
 
-		return []byte(os.Getenv("SECRET_KEY")), nil
+		return []byte(GetEnv("SECRET_KEY")), nil
 	})
 
 	var claims, ok = token.Claims.(jwt.MapClaims)
