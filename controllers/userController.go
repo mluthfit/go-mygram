@@ -20,5 +20,10 @@ func (s *Server) UserRegister(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, user)
+	ctx.JSON(201, gin.H{
+		"age":      user.Age,
+		"email":    user.Email,
+		"id":       user.ID,
+		"username": user.Username,
+	})
 }
