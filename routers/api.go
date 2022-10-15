@@ -1,10 +1,12 @@
 package routers
 
-import "github.com/gin-gonic/gin"
+import (
+	"go-mygram/controllers"
+)
 
-func ApiRoutes(router *gin.Engine) {
-	var userRouter = router.Group("/users")
+func ApiRoutes(s *controllers.Server) {
+	var userRouter = s.Router.Group("/users")
 	{
-		userRouter.POST("/register", func(ctx *gin.Context) {})
+		userRouter.POST("/register", s.UserRegister)
 	}
 }
