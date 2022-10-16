@@ -2,8 +2,8 @@ package controllers
 
 import "github.com/gin-gonic/gin"
 
-func resError(ctx *gin.Context, code int, err error) {
+func resError(ctx *gin.Context, code int, msg string) {
 	ctx.AbortWithStatusJSON(code, gin.H{
-		"message": err.Error(),
+		"message": msg,
 	})
 }

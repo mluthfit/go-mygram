@@ -1,24 +1,24 @@
 package controllers
 
 import (
-	"errors"
 	"go-mygram/helpers"
 	"go-mygram/models"
 	"net/http"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Server) UserRegister(ctx *gin.Context) {
+func (s *Server) RegisterUser(ctx *gin.Context) {
 	var user models.User
 
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		resError(ctx, http.StatusBadRequest, err)
+		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := s.db.Debug().Create(&user).Error; err != nil {
-		resError(ctx, http.StatusBadRequest, err)
+		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -30,27 +30,25 @@ func (s *Server) UserRegister(ctx *gin.Context) {
 	})
 }
 
-func (s *Server) UserLogin(ctx *gin.Context) {
+func (s *Server) LoginUser(ctx *gin.Context) {
 	var user models.User
 
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		resError(ctx, http.StatusBadRequest, err)
+		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	var payloadPass = user.Password
 	if err := s.db.Debug().Where("email = ?", user.Email).
 		Take(&user).Error; err != nil {
-		err = errors.New("invalid email or password")
-		resError(ctx, http.StatusUnauthorized, err)
+		resError(ctx, http.StatusUnauthorized, "Invalid email or password")
 		return
 	}
 
 	if comparePass := helpers.ComparePass(
 		[]byte(user.Password), []byte(payloadPass),
 	); !comparePass {
-		var err = errors.New("invalid email or password")
-		resError(ctx, http.StatusUnauthorized, err)
+		resError(ctx, http.StatusUnauthorized, "Invalid email or password")
 		return
 	}
 
@@ -59,6 +57,23 @@ func (s *Server) UserLogin(ctx *gin.Context) {
 	})
 }
 
-func (s *Server) UserUpdate(ctx *gin.Context) {
+func (s *Server) UpdateUser(ctx *gin.Context) {
 
+}
+
+func (s *Server) DeleteUser(ctx *gin.Context) {
+	var user models.User
+	var userData = ctx.MustGet("userData").(jwt.MapClaims)
+
+	var userID = userData["id"].(uint)
+	user.ID = userID
+
+	if err := s.db.Delete(&user).Error; err != nil {
+		resError(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"message": "Your account has been successfully deleted",
+	})
 }
