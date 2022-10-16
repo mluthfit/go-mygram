@@ -17,7 +17,7 @@ func (s *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := s.db.Debug().Create(&user).Error; err != nil {
+	if err := s.DB.Debug().Create(&user).Error; err != nil {
 		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -39,7 +39,7 @@ func (s *Server) LoginUser(ctx *gin.Context) {
 	}
 
 	var payloadPass = user.Password
-	if err := s.db.Debug().Where("email = ?", user.Email).
+	if err := s.DB.Debug().Where("email = ?", user.Email).
 		Take(&user).Error; err != nil {
 		resError(ctx, http.StatusUnauthorized, "Invalid email or password")
 		return
@@ -71,7 +71,7 @@ func (s *Server) DeleteUser(ctx *gin.Context) {
 
 	user.ID = userID
 
-	if err := s.db.Delete(&user).Error; err != nil {
+	if err := s.DB.Delete(&user).Error; err != nil {
 		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}

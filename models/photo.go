@@ -41,9 +41,5 @@ func (p *Photo) Update(db *gorm.DB, newPhoto Photo) error {
 }
 
 func (p *Photo) Delete(db *gorm.DB) error {
-	// if err := db.First(p).Error; err != nil {
-	// 	return fmt.Errorf(fmt.Sprintf("The photo id %d was not found", p.ID))
-	// }
-
 	return db.Delete(p).Error
 }

@@ -9,7 +9,7 @@ import (
 
 type Server struct {
 	Router *gin.Engine
-	db     *gorm.DB
+	DB     *gorm.DB
 }
 
 func NewServer(router *gin.Engine, db *gorm.DB) *Server {

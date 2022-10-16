@@ -21,7 +21,7 @@ func (s *Server) CreatePhoto(ctx *gin.Context) {
 	var userID = userData["id"].(uint)
 
 	photo.UserID = userID
-	if err := photo.Create(s.db); err != nil {
+	if err := photo.Create(s.DB); err != nil {
 		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -38,7 +38,7 @@ func (s *Server) CreatePhoto(ctx *gin.Context) {
 
 func (s *Server) GetAllPhotos(ctx *gin.Context) {
 	var photo models.Photo
-	var photos, err = photo.GetAllWithUser(s.db)
+	var photos, err = photo.GetAllWithUser(s.DB)
 
 	if err != nil {
 		resError(ctx, http.StatusBadRequest, err.Error())
@@ -50,11 +50,7 @@ func (s *Server) GetAllPhotos(ctx *gin.Context) {
 
 func (s *Server) UpdatePhoto(ctx *gin.Context) {
 	var photoId = ctx.Param("photoId")
-	var parsePhotoId, err = strconv.ParseUint(photoId, 10, 32)
-	if err != nil {
-		resError(ctx, http.StatusBadRequest, "photo id must be unsigned integer")
-		return
-	}
+	var parsePhotoId, _ = strconv.ParseUint(photoId, 10, 32)
 
 	var photo, payloadPhoto models.Photo
 	if err := ctx.ShouldBindJSON(&payloadPhoto); err != nil {
@@ -63,7 +59,7 @@ func (s *Server) UpdatePhoto(ctx *gin.Context) {
 	}
 
 	photo.ID = uint(parsePhotoId)
-	if err := photo.Update(s.db, payloadPhoto); err != nil {
+	if err := photo.Update(s.DB, payloadPhoto); err != nil {
 		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -80,16 +76,12 @@ func (s *Server) UpdatePhoto(ctx *gin.Context) {
 
 func (s *Server) DeletePhoto(ctx *gin.Context) {
 	var photoId = ctx.Param("photoId")
-	var parsePhotoId, err = strconv.ParseUint(photoId, 10, 32)
-	if err != nil {
-		resError(ctx, http.StatusBadRequest, "photo id must be unsigned integer")
-		return
-	}
+	var parsePhotoId, _ = strconv.ParseUint(photoId, 10, 32)
 
 	var photo models.Photo
 	photo.ID = uint(parsePhotoId)
 
-	if err := photo.Delete(s.db); err != nil {
+	if err := photo.Delete(s.DB); err != nil {
 		resError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}

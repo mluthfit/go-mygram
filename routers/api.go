@@ -21,8 +21,8 @@ func ApiRoutes(s *controllers.Server) {
 		photosRouter.Use(middlewares.Authentication())
 		photosRouter.POST("/", s.CreatePhoto)
 		photosRouter.GET("/", s.GetAllPhotos)
-		photosRouter.PUT("/:photoId", middlewares.PhotoAuthorization(), s.UpdatePhoto)
-		photosRouter.DELETE("/:photoId", middlewares.PhotoAuthorization(), s.DeletePhoto)
+		photosRouter.PUT("/:photoId", middlewares.PhotoAuthorization(s.DB), s.UpdatePhoto)
+		photosRouter.DELETE("/:photoId", middlewares.PhotoAuthorization(s.DB), s.DeletePhoto)
 	}
 
 	var commentsRouter = s.Router.Group("/comments")
@@ -30,8 +30,8 @@ func ApiRoutes(s *controllers.Server) {
 		commentsRouter.Use(middlewares.Authentication())
 		commentsRouter.POST("/", s.CreateComment)
 		commentsRouter.GET("/", s.GetAllComments)
-		commentsRouter.PUT("/:commentId", middlewares.CommentAuthorization(), s.UpdateComment)
-		commentsRouter.DELETE("/:commentId", middlewares.CommentAuthorization(), s.DeleteComment)
+		commentsRouter.PUT("/:commentId", middlewares.CommentAuthorization(s.DB), s.UpdateComment)
+		commentsRouter.DELETE("/:commentId", middlewares.CommentAuthorization(s.DB), s.DeleteComment)
 	}
 
 	var socialMediasRouter = s.Router.Group("/socialMedias")
@@ -39,7 +39,7 @@ func ApiRoutes(s *controllers.Server) {
 		socialMediasRouter.Use(middlewares.Authentication())
 		socialMediasRouter.POST("/", s.CreateSocialMedia)
 		socialMediasRouter.GET("/", s.GetAllSocialMedias)
-		socialMediasRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(), s.UpdateSocialMedia)
-		socialMediasRouter.DELETE("/:socialMediaId", middlewares.SocialMediaAuthorization(), s.DeleteSocialMedia)
+		socialMediasRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(s.DB), s.UpdateSocialMedia)
+		socialMediasRouter.DELETE("/:socialMediaId", middlewares.SocialMediaAuthorization(s.DB), s.DeleteSocialMedia)
 	}
 }
