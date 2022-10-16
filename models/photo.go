@@ -23,13 +23,13 @@ func (p *Photo) BeforeCreate(tx *gorm.DB) error {
 }
 
 func (p *Photo) GetAllWithUser(db *gorm.DB) (*[]Photo, error) {
-	var photos *[]Photo
+	var photos []Photo
 
-	if err := db.Preload("User").Find(photos).Error; err != nil {
+	if err := db.Preload("User").Find(&photos).Error; err != nil {
 		return nil, err
 	}
 
-	return photos, nil
+	return &photos, nil
 }
 
 func (p *Photo) Create(db *gorm.DB) error {

@@ -8,6 +8,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"gorm.io/gorm"
 )
 
@@ -18,9 +20,10 @@ func Authorization(param string, validate func(id uint, userID uint) (int, error
 	return func(ctx *gin.Context) {
 		var id = ctx.Param(param + "Id")
 		var parseId, err = strconv.ParseUint(id, 10, 32)
+
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": param + " id must be unsigned integer",
+				"message": cases.Title(language.English).String(param) + " id must be unsigned integer",
 			})
 			return
 		}
@@ -47,7 +50,7 @@ func PhotoAuthorization(db *gorm.DB) gin.HandlerFunc {
 
 		if err != nil {
 			return http.StatusBadRequest,
-				fmt.Errorf(fmt.Sprintf("The photo id %d was not found", id))
+				fmt.Errorf(fmt.Sprintf("The %s id %d was not found", name, id))
 		}
 
 		if photo.UserID != userID {
@@ -62,9 +65,45 @@ func PhotoAuthorization(db *gorm.DB) gin.HandlerFunc {
 }
 
 func CommentAuthorization(db *gorm.DB) gin.HandlerFunc {
-	return func(*gin.Context) {}
+	var name = "comment"
+	var checkUserComment = func(id uint, userID uint) (int, error) {
+		var comment models.Comment
+		var err = db.Select("user_id").First(&comment, id).Error
+
+		if err != nil {
+			return http.StatusBadRequest,
+				fmt.Errorf(fmt.Sprintf("The %s id %d was not found", name, id))
+		}
+
+		if comment.UserID != userID {
+			return http.StatusUnauthorized,
+				fmt.Errorf(fmt.Sprintf("You are not allowed to access the %s data", name))
+		}
+
+		return http.StatusOK, nil
+	}
+
+	return Authorization(name, checkUserComment)
 }
 
 func SocialMediaAuthorization(db *gorm.DB) gin.HandlerFunc {
-	return func(*gin.Context) {}
+	var name = "social media"
+	var checkUserSocialMedia = func(id uint, userID uint) (int, error) {
+		var socialMedia models.SocialMedia
+		var err = db.Select("user_id").First(&socialMedia, id).Error
+
+		if err != nil {
+			return http.StatusBadRequest,
+				fmt.Errorf(fmt.Sprintf("The %s id %d was not found", name, id))
+		}
+
+		if socialMedia.UserID != userID {
+			return http.StatusUnauthorized,
+				fmt.Errorf(fmt.Sprintf("You are not allowed to access the %s data", name))
+		}
+
+		return http.StatusOK, nil
+	}
+
+	return Authorization("socialMedia", checkUserSocialMedia)
 }
