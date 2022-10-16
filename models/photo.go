@@ -21,3 +21,29 @@ func (p *Photo) BeforeCreate(tx *gorm.DB) error {
 
 	return nil
 }
+
+func (p *Photo) GetAllWithUser(db *gorm.DB) (*[]Photo, error) {
+	var photos *[]Photo
+
+	if err := db.Preload("User").Find(photos).Error; err != nil {
+		return nil, err
+	}
+
+	return photos, nil
+}
+
+func (p *Photo) Create(db *gorm.DB) error {
+	return db.Create(p).Error
+}
+
+func (p *Photo) Update(db *gorm.DB, newPhoto Photo) error {
+	return db.Model(p).Updates(newPhoto).Error
+}
+
+func (p *Photo) Delete(db *gorm.DB) error {
+	// if err := db.First(p).Error; err != nil {
+	// 	return fmt.Errorf(fmt.Sprintf("The photo id %d was not found", p.ID))
+	// }
+
+	return db.Delete(p).Error
+}
