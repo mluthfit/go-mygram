@@ -2,18 +2,18 @@ package controllers
 
 import "github.com/gin-gonic/gin"
 
-func (s *Server) CreateSocialMedia(*gin.Context) {
+func (s *Server) CreateSocialMedia(ctx *gin.Context) {
 
 }
 
-func (s *Server) GetAllSocialMedias(*gin.Context) {
+func (s *Server) GetAllSocialMedias(ctx *gin.Context) {
 
 }
 
-func (s *Server) UpdateSocialMedia(*gin.Context) {
+func (s *Server) UpdateSocialMedia(ctx *gin.Context) {
 
 }
 
-func (s *Server) DeleteSocialMedia(*gin.Context) {
+func (s *Server) DeleteSocialMedia(ctx *gin.Context) {
 
 }

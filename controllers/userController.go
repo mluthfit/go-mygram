@@ -58,14 +58,17 @@ func (s *Server) LoginUser(ctx *gin.Context) {
 }
 
 func (s *Server) UpdateUser(ctx *gin.Context) {
-
+	ctx.JSON(200, gin.H{
+		"message": "Not implemented yet",
+	})
 }
 
 func (s *Server) DeleteUser(ctx *gin.Context) {
 	var user models.User
-	var userData = ctx.MustGet("userData").(jwt.MapClaims)
 
+	var userData = ctx.MustGet("userData").(jwt.MapClaims)
 	var userID = userData["id"].(uint)
+
 	user.ID = userID
 
 	if err := s.db.Delete(&user).Error; err != nil {
