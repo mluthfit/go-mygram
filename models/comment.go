@@ -11,9 +11,9 @@ type Comment struct {
 	BaseModel
 	UserID  uint   `json:"user_id" gorm:"not null" valid:"required"`
 	PhotoID uint   `json:"photo_id" gorm:"not null" valid:"required"`
-	Message string `json:"message" gorm:"not null" valid:"required"`
-	User    User   `json:"user" valid:"-"`
-	Photo   Photo  `json:"photo" valid:"-"`
+	Message string `json:"message" gorm:"not null" valid:"required" binding:"required"`
+	User    User   `valid:"-" binding:"-"`
+	Photo   Photo  `valid:"-" binding:"-"`
 }
 
 func (c *Comment) BeforeCreate(tx *gorm.DB) error {
@@ -25,7 +25,8 @@ func (c *Comment) BeforeCreate(tx *gorm.DB) error {
 }
 
 func (c *Comment) Create(db *gorm.DB) error {
-	if err := db.First(&Photo{}, c.PhotoID).Error; err != nil {
+	if err := db.Debug().First(&Photo{}, c.PhotoID).
+		Error; err != nil {
 		var name = "photo"
 		return fmt.Errorf(fmt.Sprintf("The %s id %d was not found", name, c.PhotoID))
 	}
@@ -36,8 +37,9 @@ func (c *Comment) Create(db *gorm.DB) error {
 func (c *Comment) GetAllWithUserAndPhoto(db *gorm.DB) (*[]Comment, error) {
 	var comments []Comment
 
-	if err := db.Preload("Users").Preload("Photos").
-		Find(&comments).Error; err != nil {
+	if err := db.Debug().Preload("User").
+		Preload("Photo").Find(&comments).
+		Error; err != nil {
 		return nil, err
 	}
 
@@ -45,9 +47,14 @@ func (c *Comment) GetAllWithUserAndPhoto(db *gorm.DB) (*[]Comment, error) {
 }
 
 func (c *Comment) Update(db *gorm.DB, newComment Comment) error {
-	return db.Model(c).Updates(newComment).Error
+	if err := db.Debug().Model(c).Updates(newComment).
+		Error; err != nil {
+		return err
+	}
+
+	return db.First(c).Error
 }
 
 func (c *Comment) Delete(db *gorm.DB) error {
-	return db.Delete(c).Error
+	return db.Debug().Delete(c).Error
 }

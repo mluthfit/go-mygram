@@ -18,7 +18,7 @@ func (s *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := s.DB.Debug().Create(&user).Error; err != nil {
+	if err := user.Create(s.DB); err != nil {
 		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
@@ -59,8 +59,28 @@ func (s *Server) LoginUser(ctx *gin.Context) {
 }
 
 func (s *Server) UpdateUser(ctx *gin.Context) {
+	var user, newUser models.User
+
+	var userData = ctx.MustGet("userData").(jwt.MapClaims)
+	var userID = uint(userData["id"].(float64))
+
+	if err := ctx.ShouldBindJSON(&newUser); err != nil {
+		resError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	user.ID = userID
+	if err := user.Update(s.DB, newUser); err != nil {
+		resError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
 	ctx.JSON(200, gin.H{
-		"message": "not implemented yet",
+		"id":         user.ID,
+		"email":      user.Email,
+		"username":   user.Username,
+		"age":        user.Age,
+		"updated_at": user.UpdatedAt,
 	})
 }
 
@@ -72,7 +92,7 @@ func (s *Server) DeleteUser(ctx *gin.Context) {
 
 	user.ID = userID
 
-	if err := s.DB.Delete(&user).Error; err != nil {
+	if err := user.Delete(s.DB); err != nil {
 		resError(ctx, http.StatusBadRequest, err)
 		return
 	}

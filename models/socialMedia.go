@@ -7,10 +7,10 @@ import (
 
 type SocialMedia struct {
 	BaseModel
-	Name           string `json:"name" gorm:"not null" valid:"required"`
-	SocialMediaUrl string `json:"social_media_url" gorm:"not null" valid:"required"`
+	Name           string `json:"name" gorm:"not null" valid:"required" binding:"required"`
+	SocialMediaUrl string `json:"social_media_url" gorm:"not null" valid:"required" binding:"required"`
 	UserID         uint   `json:"user_id" gorm:"not null" valid:"required"`
-	User           User   `json:"user" valid:"-"`
+	User           User   `valid:"-" binding:"-"`
 }
 
 func (sm *SocialMedia) BeforeCreate(tx *gorm.DB) error {
@@ -22,13 +22,14 @@ func (sm *SocialMedia) BeforeCreate(tx *gorm.DB) error {
 }
 
 func (sm *SocialMedia) Create(db *gorm.DB) error {
-	return db.Create(sm).Error
+	return db.Debug().Create(sm).Error
 }
 
 func (sm *SocialMedia) GetAllWithUser(db *gorm.DB) (*[]SocialMedia, error) {
 	var socialMedias []SocialMedia
 
-	if err := db.Preload("Users").Find(&socialMedias).Error; err != nil {
+	if err := db.Debug().Preload("User").
+		Find(&socialMedias).Error; err != nil {
 		return nil, err
 	}
 
@@ -36,9 +37,14 @@ func (sm *SocialMedia) GetAllWithUser(db *gorm.DB) (*[]SocialMedia, error) {
 }
 
 func (sm *SocialMedia) Update(db *gorm.DB, newSocialMedia SocialMedia) error {
-	return db.Model(sm).Updates(newSocialMedia).Error
+	if err := db.Debug().Model(sm).
+		Updates(newSocialMedia).Error; err != nil {
+		return err
+	}
+
+	return db.First(sm).Error
 }
 
 func (sm *SocialMedia) Delete(db *gorm.DB) error {
-	return db.Delete(sm).Error
+	return db.Debug().Delete(sm).Error
 }

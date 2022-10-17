@@ -34,7 +34,7 @@ func ApiRoutes(s *controllers.Server) {
 		commentsRouter.DELETE("/:commentId", middlewares.CommentAuthorization(s.DB), s.DeleteComment)
 	}
 
-	var socialMediasRouter = s.Router.Group("/socialMedias")
+	var socialMediasRouter = s.Router.Group("/socialmedias")
 	{
 		socialMediasRouter.Use(middlewares.Authentication())
 		socialMediasRouter.POST("/", s.CreateSocialMedia)

@@ -11,7 +11,7 @@ import (
 type User struct {
 	BaseModel
 	Username string `json:"username" gorm:"uniqueIndex;not null" valid:"required"`
-	Email    string `json:"email" gorm:"uniqueIndex;not null" valid:"required,email"`
+	Email    string `json:"email" gorm:"uniqueIndex;not null" valid:"required,email" binding:"required"`
 	Password string `json:"password" gorm:"not null" valid:"required,minstringlength(6)"`
 	Age      uint   `json:"age" gorm:"not null" valid:"required,numeric"`
 }
@@ -28,4 +28,20 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 
 	u.Password = helpers.HashPass(u.Password)
 	return nil
+}
+
+func (u *User) Create(db *gorm.DB) error {
+	return db.Debug().Create(u).Error
+}
+
+func (u *User) Update(db *gorm.DB, newUser User) error {
+	if err := db.Debug().Model(u).Updates(newUser).Error; err != nil {
+		return err
+	}
+
+	return db.Debug().First(u).Error
+}
+
+func (u *User) Delete(db *gorm.DB) error {
+	return db.Debug().Delete(u).Error
 }

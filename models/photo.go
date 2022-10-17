@@ -1,19 +1,17 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/asaskevich/govalidator"
 	"gorm.io/gorm"
 )
 
 type Photo struct {
 	BaseModel
-	Title    string `json:"title" gorm:"not null" valid:"required"`
+	Title    string `json:"title" gorm:"not null" valid:"required" binding:"required"`
 	Caption  string `json:"caption"`
-	PhotoUrl string `json:"photo_url" gorm:"not null" valid:"required"`
+	PhotoUrl string `json:"photo_url" gorm:"not null" valid:"required" binding:"required" `
 	UserID   uint   `json:"user_id" gorm:"not null" valid:"required"`
-	User     User   `valid:"-"`
+	User     User   `valid:"-" binding:"-"`
 }
 
 func (p *Photo) BeforeCreate(tx *gorm.DB) error {
@@ -27,23 +25,27 @@ func (p *Photo) BeforeCreate(tx *gorm.DB) error {
 func (p *Photo) GetAllWithUser(db *gorm.DB) (*[]Photo, error) {
 	var photos []Photo
 
-	if err := db.Preload("User").Find(&photos).Error; err != nil {
+	if err := db.Debug().Preload("User").
+		Find(&photos).Error; err != nil {
 		return nil, err
 	}
-
-	fmt.Println(photos)
 
 	return &photos, nil
 }
 
 func (p *Photo) Create(db *gorm.DB) error {
-	return db.Create(p).Error
+	return db.Debug().Create(p).Error
 }
 
 func (p *Photo) Update(db *gorm.DB, newPhoto Photo) error {
-	return db.Model(p).Updates(newPhoto).Error
+	if err := db.Debug().Model(p).
+		Updates(newPhoto).Error; err != nil {
+		return err
+	}
+
+	return db.First(p).Error
 }
 
 func (p *Photo) Delete(db *gorm.DB) error {
-	return db.Delete(p).Error
+	return db.Debug().Delete(p).Error
 }
