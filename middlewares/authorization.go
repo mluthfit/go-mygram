@@ -8,22 +8,20 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	"gorm.io/gorm"
 )
 
 // Param Validation
 // One Data Checker Validation
 // Authorization Validation
-func Authorization(param string, validate func(id uint, userID uint) (int, error)) gin.HandlerFunc {
+func Authorization(param, modelName string, validate func(id, userID uint) (int, error)) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var id = ctx.Param(param + "Id")
 		var parseId, err = strconv.ParseUint(id, 10, 32)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": cases.Title(language.English).String(param) + " id must be unsigned integer",
+				"message": "The" + modelName + " id must be unsigned integer",
 			})
 			return
 		}
@@ -61,12 +59,12 @@ func PhotoAuthorization(db *gorm.DB) gin.HandlerFunc {
 		return http.StatusOK, nil
 	}
 
-	return Authorization(name, checkUserPhoto)
+	return Authorization("photo", name, checkUserPhoto)
 }
 
 func CommentAuthorization(db *gorm.DB) gin.HandlerFunc {
 	var name = "comment"
-	var checkUserComment = func(id uint, userID uint) (int, error) {
+	var checkUserComment = func(id, userID uint) (int, error) {
 		var comment models.Comment
 		var err = db.Select("user_id").First(&comment, id).Error
 
@@ -83,12 +81,12 @@ func CommentAuthorization(db *gorm.DB) gin.HandlerFunc {
 		return http.StatusOK, nil
 	}
 
-	return Authorization(name, checkUserComment)
+	return Authorization("comment", name, checkUserComment)
 }
 
 func SocialMediaAuthorization(db *gorm.DB) gin.HandlerFunc {
 	var name = "social media"
-	var checkUserSocialMedia = func(id uint, userID uint) (int, error) {
+	var checkUserSocialMedia = func(id, userID uint) (int, error) {
 		var socialMedia models.SocialMedia
 		var err = db.Select("user_id").First(&socialMedia, id).Error
 
@@ -105,5 +103,5 @@ func SocialMediaAuthorization(db *gorm.DB) gin.HandlerFunc {
 		return http.StatusOK, nil
 	}
 
-	return Authorization("socialMedia", checkUserSocialMedia)
+	return Authorization("socialMedia", name, checkUserSocialMedia)
 }
