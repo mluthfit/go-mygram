@@ -13,16 +13,16 @@ func (s *Server) CreateSocialMedia(ctx *gin.Context) {
 	var socialMedia models.SocialMedia
 
 	if err := ctx.ShouldBindJSON(&socialMedia); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	var userData = ctx.MustGet("userData").(jwt.MapClaims)
-	var userID = userData["id"].(uint)
+	var userID = uint(userData["id"].(float64))
 
 	socialMedia.UserID = userID
 	if err := socialMedia.Create(s.DB); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (s *Server) GetAllSocialMedias(ctx *gin.Context) {
 	var socialMedias, err = socialMedia.GetAllWithUser(s.DB)
 
 	if err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -55,13 +55,13 @@ func (s *Server) UpdateSocialMedia(ctx *gin.Context) {
 
 	var socialMedia, payloadSocialMedia models.SocialMedia
 	if err := ctx.ShouldBindJSON(&payloadSocialMedia); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	socialMedia.ID = uint(parseSocialMediaId)
 	if err := socialMedia.Update(s.DB, payloadSocialMedia); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -82,11 +82,11 @@ func (s *Server) DeleteSocialMedia(ctx *gin.Context) {
 	socialMedia.ID = uint(parseSocialMediaId)
 
 	if err := socialMedia.Delete(s.DB); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	ctx.JSON(200, gin.H{
-		"message": "Your social media has been succesfully deleted",
+		"message": "your social media has been succesfully deleted",
 	})
 }

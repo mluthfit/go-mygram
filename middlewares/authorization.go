@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"fmt"
 	"go-mygram/models"
 	"net/http"
@@ -21,13 +22,13 @@ func Authorization(param, modelName string, validate func(id, userID uint) (int,
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "The" + modelName + " id must be unsigned integer",
+				"message": "the" + modelName + " id must be unsigned integer",
 			})
 			return
 		}
 
 		var userData = ctx.MustGet("userData").(jwt.MapClaims)
-		var userID = userData["id"].(uint)
+		var userID = uint(userData["id"].(float64))
 
 		if code, err := validate(uint(parseId), userID); err != nil {
 			ctx.AbortWithStatusJSON(code, gin.H{
@@ -48,12 +49,12 @@ func PhotoAuthorization(db *gorm.DB) gin.HandlerFunc {
 
 		if err != nil {
 			return http.StatusBadRequest,
-				fmt.Errorf(fmt.Sprintf("The %s id %d was not found", name, id))
+				fmt.Errorf(fmt.Sprintf("the %s id %d was not found", name, id))
 		}
 
 		if photo.UserID != userID {
 			return http.StatusUnauthorized,
-				fmt.Errorf(fmt.Sprintf("You are not allowed to access the %s data", name))
+				errors.New("you are not allowed to access the data")
 		}
 
 		return http.StatusOK, nil
@@ -70,12 +71,12 @@ func CommentAuthorization(db *gorm.DB) gin.HandlerFunc {
 
 		if err != nil {
 			return http.StatusBadRequest,
-				fmt.Errorf(fmt.Sprintf("The %s id %d was not found", name, id))
+				fmt.Errorf(fmt.Sprintf("the %s id %d was not found", name, id))
 		}
 
 		if comment.UserID != userID {
 			return http.StatusUnauthorized,
-				fmt.Errorf(fmt.Sprintf("You are not allowed to access the %s data", name))
+				errors.New("you are not allowed to access the data")
 		}
 
 		return http.StatusOK, nil
@@ -92,12 +93,12 @@ func SocialMediaAuthorization(db *gorm.DB) gin.HandlerFunc {
 
 		if err != nil {
 			return http.StatusBadRequest,
-				fmt.Errorf(fmt.Sprintf("The %s id %d was not found", name, id))
+				fmt.Errorf(fmt.Sprintf("the %s id %d was not found", name, id))
 		}
 
 		if socialMedia.UserID != userID {
 			return http.StatusUnauthorized,
-				fmt.Errorf(fmt.Sprintf("You are not allowed to access the %s data", name))
+				errors.New("you are not allowed to access the data")
 		}
 
 		return http.StatusOK, nil

@@ -13,16 +13,16 @@ func (s *Server) CreateComment(ctx *gin.Context) {
 	var comment models.Comment
 
 	if err := ctx.ShouldBindJSON(&comment); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	var userData = ctx.MustGet("userData").(jwt.MapClaims)
-	var userID = userData["id"].(uint)
+	var userID = uint(userData["id"].(float64))
 
 	comment.UserID = userID
 	if err := comment.Create(s.DB); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (s *Server) GetAllComments(ctx *gin.Context) {
 	var comments, err = comment.GetAllWithUserAndPhoto(s.DB)
 
 	if err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -53,13 +53,13 @@ func (s *Server) UpdateComment(ctx *gin.Context) {
 
 	var comment, payloadComment models.Comment
 	if err := ctx.ShouldBindJSON(&payloadComment); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	comment.ID = uint(parseCommentId)
 	if err := comment.Update(s.DB, payloadComment); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -80,11 +80,11 @@ func (s *Server) DeleteComment(ctx *gin.Context) {
 	comment.ID = uint(parseCommentId)
 
 	if err := comment.Delete(s.DB); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	ctx.JSON(200, gin.H{
-		"message": "Your comment has been succesfully deleted",
+		"message": "your comment has been succesfully deleted",
 	})
 }

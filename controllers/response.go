@@ -1,9 +1,13 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"strings"
 
-func resError(ctx *gin.Context, code int, msg string) {
+	"github.com/gin-gonic/gin"
+)
+
+func resError(ctx *gin.Context, code int, err error) {
 	ctx.AbortWithStatusJSON(code, gin.H{
-		"message": msg,
+		"message": strings.ToLower(err.Error()),
 	})
 }

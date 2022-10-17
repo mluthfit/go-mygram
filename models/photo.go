@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/asaskevich/govalidator"
 	"gorm.io/gorm"
 )
@@ -10,8 +12,8 @@ type Photo struct {
 	Title    string `json:"title" gorm:"not null" valid:"required"`
 	Caption  string `json:"caption"`
 	PhotoUrl string `json:"photo_url" gorm:"not null" valid:"required"`
-	UserID   uint   `json:"user_id"`
-	User     User
+	UserID   uint   `json:"user_id" gorm:"not null" valid:"required"`
+	User     User   `valid:"-"`
 }
 
 func (p *Photo) BeforeCreate(tx *gorm.DB) error {
@@ -28,6 +30,8 @@ func (p *Photo) GetAllWithUser(db *gorm.DB) (*[]Photo, error) {
 	if err := db.Preload("User").Find(&photos).Error; err != nil {
 		return nil, err
 	}
+
+	fmt.Println(photos)
 
 	return &photos, nil
 }

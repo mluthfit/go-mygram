@@ -13,16 +13,16 @@ func (s *Server) CreatePhoto(ctx *gin.Context) {
 	var photo models.Photo
 
 	if err := ctx.ShouldBindJSON(&photo); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	var userData = ctx.MustGet("userData").(jwt.MapClaims)
-	var userID = userData["id"].(uint)
+	var userID = uint(userData["id"].(float64))
 
 	photo.UserID = userID
 	if err := photo.Create(s.DB); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (s *Server) GetAllPhotos(ctx *gin.Context) {
 	var photos, err = photo.GetAllWithUser(s.DB)
 
 	if err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -54,13 +54,13 @@ func (s *Server) UpdatePhoto(ctx *gin.Context) {
 
 	var photo, payloadPhoto models.Photo
 	if err := ctx.ShouldBindJSON(&payloadPhoto); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	photo.ID = uint(parsePhotoId)
 	if err := photo.Update(s.DB, payloadPhoto); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -82,11 +82,11 @@ func (s *Server) DeletePhoto(ctx *gin.Context) {
 	photo.ID = uint(parsePhotoId)
 
 	if err := photo.Delete(s.DB); err != nil {
-		resError(ctx, http.StatusBadRequest, err.Error())
+		resError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	ctx.JSON(200, gin.H{
-		"message": "Your photo has been successfully deleted",
+		"message": "your photo has been successfully deleted",
 	})
 }

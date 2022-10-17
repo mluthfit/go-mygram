@@ -9,11 +9,11 @@ import (
 
 type Comment struct {
 	BaseModel
-	UserID  uint   `json:"user_id"`
-	PhotoID uint   `json:"photo_id"`
+	UserID  uint   `json:"user_id" gorm:"not null" valid:"required"`
+	PhotoID uint   `json:"photo_id" gorm:"not null" valid:"required"`
 	Message string `json:"message" gorm:"not null" valid:"required"`
-	User    User   `json:"user"`
-	Photo   Photo  `json:"photo"`
+	User    User   `json:"user" valid:"-"`
+	Photo   Photo  `json:"photo" valid:"-"`
 }
 
 func (c *Comment) BeforeCreate(tx *gorm.DB) error {

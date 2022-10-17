@@ -17,8 +17,9 @@ type User struct {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
+
 	if u.Age <= 8 {
-		return errors.New("age must be greater than 8")
+		return errors.New("age: required and must be greater than 8")
 	}
 
 	if _, err := govalidator.ValidateStruct(u); err != nil {

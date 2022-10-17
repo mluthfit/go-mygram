@@ -9,8 +9,8 @@ type SocialMedia struct {
 	BaseModel
 	Name           string `json:"name" gorm:"not null" valid:"required"`
 	SocialMediaUrl string `json:"social_media_url" gorm:"not null" valid:"required"`
-	UserID         uint   `json:"user_id"`
-	User           User
+	UserID         uint   `json:"user_id" gorm:"not null" valid:"required"`
+	User           User   `json:"user" valid:"-"`
 }
 
 func (sm *SocialMedia) BeforeCreate(tx *gorm.DB) error {
