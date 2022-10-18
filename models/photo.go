@@ -22,7 +22,7 @@ func (p *Photo) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-func (p *Photo) GetAllWithUser(db *gorm.DB) (*[]Photo, error) {
+func (p *Photo) GetAllWithUser(db *gorm.DB) ([]map[string]any, error) {
 	var photos []Photo
 
 	if err := db.Debug().Preload("User").
@@ -30,7 +30,7 @@ func (p *Photo) GetAllWithUser(db *gorm.DB) (*[]Photo, error) {
 		return nil, err
 	}
 
-	return &photos, nil
+	return p.mappingGetAll(photos), nil
 }
 
 func (p *Photo) Create(db *gorm.DB) error {
@@ -48,4 +48,26 @@ func (p *Photo) Update(db *gorm.DB, newPhoto Photo) error {
 
 func (p *Photo) Delete(db *gorm.DB) error {
 	return db.Debug().Delete(p).Error
+}
+
+func (p *Photo) mappingGetAll(photos []Photo) (results []map[string]any) {
+	for _, photo := range photos {
+		var data = map[string]any{
+			"id":         photo.ID,
+			"title":      photo.Title,
+			"caption":    photo.Caption,
+			"photo_url":  photo.PhotoUrl,
+			"user_id":    photo.UserID,
+			"created_at": photo.CreatedAt,
+			"updated_at": photo.UpdatedAt,
+			"User": map[string]string{
+				"email":    photo.User.Email,
+				"username": photo.User.Username,
+			},
+		}
+
+		results = append(results, data)
+	}
+
+	return
 }

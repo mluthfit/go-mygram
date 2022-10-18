@@ -17,7 +17,6 @@ type User struct {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
-
 	if u.Age <= 8 {
 		return errors.New("age: required and must be greater than 8")
 	}
@@ -27,6 +26,14 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	}
 
 	u.Password = helpers.HashPass(u.Password)
+	return nil
+}
+
+func (u *User) BeforeUpdate(tx *gorm.DB) error {
+	if u.Username == "" {
+		return errors.New("username: required")
+	}
+
 	return nil
 }
 

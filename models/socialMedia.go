@@ -25,7 +25,7 @@ func (sm *SocialMedia) Create(db *gorm.DB) error {
 	return db.Debug().Create(sm).Error
 }
 
-func (sm *SocialMedia) GetAllWithUser(db *gorm.DB) (*[]SocialMedia, error) {
+func (sm *SocialMedia) GetAllWithUser(db *gorm.DB) ([]map[string]any, error) {
 	var socialMedias []SocialMedia
 
 	if err := db.Debug().Preload("User").
@@ -33,7 +33,7 @@ func (sm *SocialMedia) GetAllWithUser(db *gorm.DB) (*[]SocialMedia, error) {
 		return nil, err
 	}
 
-	return &socialMedias, nil
+	return sm.mappingGetAll(socialMedias), nil
 }
 
 func (sm *SocialMedia) Update(db *gorm.DB, newSocialMedia SocialMedia) error {
@@ -47,4 +47,26 @@ func (sm *SocialMedia) Update(db *gorm.DB, newSocialMedia SocialMedia) error {
 
 func (sm *SocialMedia) Delete(db *gorm.DB) error {
 	return db.Debug().Delete(sm).Error
+}
+
+func (sm *SocialMedia) mappingGetAll(socialMedias []SocialMedia) (results []map[string]any) {
+	for _, socialMedia := range socialMedias {
+		var data = map[string]any{
+			"id":               socialMedia.ID,
+			"name":             socialMedia.Name,
+			"social_media_url": socialMedia.SocialMediaUrl,
+			"UserId":           socialMedia.UserID,
+			"created_at":       socialMedia.CreatedAt,
+			"updated_at":       socialMedia.UpdatedAt,
+			"User": map[string]any{
+				"id":                socialMedia.User.ID,
+				"email":             socialMedia.User.Email,
+				"profile_image_url": socialMedia.SocialMediaUrl,
+			},
+		}
+
+		results = append(results, data)
+	}
+
+	return
 }
