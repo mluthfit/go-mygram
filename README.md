@@ -20,7 +20,13 @@ Then, open the folder and **install** all packages.
 > go mod tidy
 ```
 
-Then, adjust the database configuration in `databases/db.go` file.
+Then, copy `.env.example` to `.env`
+
+```
+cp .env.example .env
+```
+
+Then fill the environment variables.
 
 Last, start the server.
 
