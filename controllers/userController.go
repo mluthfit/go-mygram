@@ -69,6 +69,11 @@ func (s *Server) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
+	if newUser.Username == "" {
+		resError(ctx, http.StatusBadRequest, errors.New("username: required"))
+		return
+	}
+
 	user.ID = userID
 	if err := user.Update(s.DB, newUser); err != nil {
 		resError(ctx, http.StatusBadRequest, err)

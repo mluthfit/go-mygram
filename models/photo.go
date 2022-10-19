@@ -43,7 +43,7 @@ func (p *Photo) Update(db *gorm.DB, newPhoto Photo) error {
 		return err
 	}
 
-	return db.First(p).Error
+	return db.Debug().First(p).Error
 }
 
 func (p *Photo) Delete(db *gorm.DB) error {

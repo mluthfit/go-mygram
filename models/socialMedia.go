@@ -28,7 +28,7 @@ func (sm *SocialMedia) Create(db *gorm.DB) error {
 func (sm *SocialMedia) GetAllWithUser(db *gorm.DB) ([]map[string]any, error) {
 	var socialMedias []SocialMedia
 
-	if err := db.Debug().Preload("User").
+	if err := db.Debug().Preload("User.Photos").
 		Find(&socialMedias).Error; err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (sm *SocialMedia) Update(db *gorm.DB, newSocialMedia SocialMedia) error {
 		return err
 	}
 
-	return db.First(sm).Error
+	return db.Debug().First(sm).Error
 }
 
 func (sm *SocialMedia) Delete(db *gorm.DB) error {
@@ -50,7 +50,13 @@ func (sm *SocialMedia) Delete(db *gorm.DB) error {
 }
 
 func (sm *SocialMedia) mappingGetAll(socialMedias []SocialMedia) (results []map[string]any) {
+
 	for _, socialMedia := range socialMedias {
+		var profileImageUrl string
+		if len(socialMedia.User.Photos) > 0 {
+			profileImageUrl = socialMedia.User.Photos[0].PhotoUrl
+		}
+
 		var data = map[string]any{
 			"id":               socialMedia.ID,
 			"name":             socialMedia.Name,
@@ -61,7 +67,7 @@ func (sm *SocialMedia) mappingGetAll(socialMedias []SocialMedia) (results []map[
 			"User": map[string]any{
 				"id":                socialMedia.User.ID,
 				"email":             socialMedia.User.Email,
-				"profile_image_url": socialMedia.SocialMediaUrl,
+				"profile_image_url": profileImageUrl,
 			},
 		}
 

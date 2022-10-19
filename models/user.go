@@ -14,6 +14,7 @@ type User struct {
 	Email    string `json:"email" gorm:"uniqueIndex;not null" valid:"required,email" binding:"required"`
 	Password string `json:"password" gorm:"not null" valid:"required,minstringlength(6)"`
 	Age      uint   `json:"age" gorm:"not null" valid:"required,numeric"`
+	Photos   []Photo
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
@@ -26,14 +27,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	}
 
 	u.Password = helpers.HashPass(u.Password)
-	return nil
-}
-
-func (u *User) BeforeUpdate(tx *gorm.DB) error {
-	if u.Username == "" {
-		return errors.New("username: required")
-	}
-
 	return nil
 }
 

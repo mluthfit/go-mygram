@@ -65,8 +65,9 @@ func (s *Server) UpdateComment(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{
 		"id":         comment.ID,
-		"message":    comment.Message,
-		"photo_id":   comment.PhotoID,
+		"title":      comment.Photo.Title,
+		"caption":    comment.Photo.Caption,
+		"photo_url":  comment.Photo.PhotoUrl,
 		"user_id":    comment.UserID,
 		"updated_at": comment.UpdatedAt,
 	})

@@ -52,7 +52,7 @@ func (c *Comment) Update(db *gorm.DB, newComment Comment) error {
 		return err
 	}
 
-	return db.First(c).Error
+	return db.Debug().Preload("Photo").First(c).Error
 }
 
 func (c *Comment) Delete(db *gorm.DB) error {
